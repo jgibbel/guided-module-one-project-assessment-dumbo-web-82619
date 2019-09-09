@@ -1,4 +1,4 @@
-require 'tty-prompt'
+# require 'tty-prompt'
 
 class Interface
 
@@ -17,9 +17,15 @@ class Interface
           menu.choice "Returning", -> {User.handle_returning_user}
           menu.choice "New", -> {User.handle_new_user}
         end
-      end
+    end
 
-
-      end
-
+    def main_menu(user_object)
+        system "clear"
+        self.prompt.select("Menu Items:") do |menu| 
+            menu.choice "Account Information", -> {user_object.account_information} 
+            menu.choice "My Playlists", -> {user_object.my_playlists}
+            menu.choice "Create Playlist", -> {Playlist.make_new(user_object)}
+            menu.choice "Exit"
+        end 
+    end 
 end 
