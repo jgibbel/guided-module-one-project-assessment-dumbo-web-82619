@@ -1,4 +1,4 @@
-class Tracklist 
+class Tracklist < ActiveRecord::Base 
     belongs_to :playlist
     belongs_to :song 
 
