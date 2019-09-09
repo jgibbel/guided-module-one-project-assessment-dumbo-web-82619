@@ -10,13 +10,13 @@ class User < ActiveRecord::Base
         username = gets.chomp
         if !User.find_by(username: username)
           TTY::Prompt.new.keypress("User not found. Please enter a valid name. Press any key to try again.")
-          nil
+          Interface.run_interface
         else puts "What is your password?"
             password = gets.chomp
             if User.find_by(username: username).password == password 
                 User.find_by(username: username)
-            else TTY::Prompt.new.keypress("Incorrect password, press any key to reenter")
-                nil 
+            else TTY::Prompt.new.keypress("Incorrect password, press any key to restart")
+                Interface.run_interface
             end 
         end
     end
@@ -28,15 +28,17 @@ class User < ActiveRecord::Base
         User.create(name: name, username: username, password: password)
     end
 
-    def new_playlist(playlist_name)
-        Playlist.create(self, playlist_name)
-    end 
+    # def new_playlist(playlist_name)
+    #     Playlist.create(self, playlist_name)
+    # end 
 
     def account_information
         prompt = TTY::Prompt.new 
         prompt.select("Name: #{name}, Username: #{username}, Password: #{password}") do |menu|
-            menu.choice "Change Account Info", -> {}
-            menu.choice "Delete Account", -> {}
+            menu.choice "Change Name", -> {self.change_name}
+            menu.choice "Change Username", -> {self.change_username}
+            menu.choice "Change Password", -> {self.change_password}
+            menu.choice "Delete Account", -> {self.delete_account}
             menu.choice "Back", -> {}
         end 
     end
@@ -45,10 +47,33 @@ class User < ActiveRecord::Base
         prompt = TTY::Prompt.new 
         system "clear"
         choices = self.playlists.map {|playlist| playlist.name}
-        # prompt.enum_select("Your Playlists:")
         new_choice = prompt.select("Your playlists", choices)
-        # TODO: list_of_tracks
         Playlist.list_of_tracks(new_choice)
     end
 
+    def change_name
+        prompt = TTY::Prompt.new 
+        new_name = prompt.ask("What is your new name")
+        self.update(name: new_name)
+        self.account_information
+    end
+    
+    def change_username
+        prompt = TTY::Prompt.new 
+        new_name = prompt.ask("What is your username")
+        self.update(username: new_name)
+        self.account_information
+    end
+
+    def change_password
+        prompt = TTY::Prompt.new 
+        new_name = prompt.ask("What is your new password")
+        self.update(password: new_name)
+        self.account_information
+    end
+
+    def delete_account
+        self.destroy
+        Interface.run_interface
+    end
 end 

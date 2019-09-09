@@ -10,8 +10,8 @@ class Song < ActiveRecord::Base
         prompt = TTY::Prompt.new
         songs = Song.all.map {|song| song.title}
         selected = prompt.multi_select("pick your songs", songs)
-        selected.map do |song|
-            Song.find_by(title: song)
+        selected.map do |title|
+            Song.find_by(title: title)
         end
     end
 

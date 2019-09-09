@@ -10,12 +10,19 @@ class Interface
 
     end 
 
+    def self.run_interface
+        cli = self.new
+        user_object = cli.welcome
+        cli.main_menu(user_object)
+    end
+
     def welcome
         system "clear"
         puts "Welcome"
         self.prompt.select("Returning or New User?") do |menu|
           menu.choice "Returning", -> {User.handle_returning_user}
           menu.choice "New", -> {User.handle_new_user}
+
         end
     end
 

@@ -6,10 +6,10 @@ class Playlist < ActiveRecord::Base
     def self.list_of_tracks(playlist_name)
         prompt = TTY::Prompt.new
         system "clear"
-        list = self.all.find_by(name == playlist_name)
+        list = self.find_by(name == playlist_name)
         tracks = list.tracklists.map {|track| track.song.title}
         puts tracks
-
+        #refactor track display
     end 
 
     def self.make_new(user_object)
