@@ -3,7 +3,7 @@ class Playlist < ActiveRecord::Base
     has_many :tracklists
     has_many :songs, through: :tracklists 
 
-    def self.list_of_tracks(playlist_name)
+    def self.list_of_tracks(playlist_name, user)
         prompt = TTY::Prompt.new
         system "clear"
 
@@ -16,7 +16,7 @@ class Playlist < ActiveRecord::Base
         new_choice = prompt.select("Your songs", tracks)
 
         if new_choice == "Back" || new_choice == "" || new_choice == "Empty Playlist"
-            Playlist.find_by(name: playlist_name).user.my_playlists
+            user.my_playlists
         else
             puts "Playing song:"
             puts ""

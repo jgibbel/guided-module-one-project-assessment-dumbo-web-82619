@@ -74,7 +74,7 @@ class User < ActiveRecord::Base
         if new_choice == "Back" || new_choice == "" || new_choice == "Go create a new Playlist!"
             Interface.new.main_menu(self)
         else
-            Playlist.list_of_tracks(new_choice)
+            Playlist.list_of_tracks(new_choice, self)
         end
     end
 
