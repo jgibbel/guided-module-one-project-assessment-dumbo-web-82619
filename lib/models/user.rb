@@ -5,21 +5,39 @@ class User < ActiveRecord::Base
     # attr_accessor :name, :username, :password 
 
 
+    # def self.handle_returning_user
+    #     puts "What is your username?"
+    #     username = gets.chomp
+    #     if !User.find_by(username: username)
+    #       TTY::Prompt.new.keypress("User not found. Please enter a valid name. Press any key to try again.")
+    #       Interface.run_interface
+    #     else puts "What is your password?"
+    #         password = gets.chomp
+    #         if User.find_by(username: username).password == password 
+    #             User.find_by(username: username)
+    #         else TTY::Prompt.new.keypress("Incorrect password, press any key to restart")
+    #             Interface.run_interface
+    #         end 
+    #     end
+    # end
+
     def self.handle_returning_user
-        puts "What is your username?"
-        username = gets.chomp
-        if !User.find_by(username: username)
-          TTY::Prompt.new.keypress("User not found. Please enter a valid name. Press any key to try again.")
-          Interface.run_interface
-        else puts "What is your password?"
-            password = gets.chomp
-            if User.find_by(username: username).password == password 
-                User.find_by(username: username)
-            else TTY::Prompt.new.keypress("Incorrect password, press any key to restart")
-                Interface.run_interface
-            end 
+        prompt = TTY::Prompt.new
+        music_note = prompt.decorate('🎵')
+        user_hash = prompt.collect do 
+            key(:username).ask("What is your username?")
+            key(:password).mask("What is your password?", mask: music_note)
         end
+        
+       if user_object = User.find_by(username: user_hash[:username], password: user_hash[:password])
+
+            return user_object
+
+        else TTY::Prompt.new.keypress("Incorrect credentials, press any key to restart")
+            Interface.run_interface
+        end   
     end
+
 
     def self.handle_new_user
         name = TTY::Prompt.new.ask("What is your name?")
@@ -39,19 +57,25 @@ class User < ActiveRecord::Base
             menu.choice "Change Username", -> {self.change_username}
             menu.choice "Change Password", -> {self.change_password}
             menu.choice "Delete Account", -> {self.delete_account}
-            menu.choice "Back", -> {}
+            menu.choice "Back", -> {Interface.new.main_menu(self)}
         end 
     end
 
     def my_playlists
-        system "clear"
         prompt = TTY::Prompt.new 
+        system "clear"
         choices = self.playlists.map {|playlist| playlist.name}
-        new_choice = prompt.select("Your playlists ", choices)
-        prompt.select("Exit", Interface.new.main_menu(self))
-        # prompt.on(:keyspace) { |key| Interface.new.main_menu(self)}
-        # binding.pry
-        Playlist.list_of_tracks(new_choice)
+        if choices.length == 0 
+            choices << "Go create a new Playlist!"
+        end
+        choices << ["","Back"]
+        new_choice = prompt.select("Your playlists", choices)
+
+        if new_choice == "Back" || new_choice == "" || new_choice == "Go create a new Playlist!"
+            Interface.new.main_menu(self)
+        else
+            Playlist.list_of_tracks(new_choice)
+        end
     end
 
     def change_name

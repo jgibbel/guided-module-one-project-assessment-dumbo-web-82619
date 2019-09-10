@@ -22,6 +22,8 @@ class Interface
         self.prompt.select("Returning or New User?") do |menu|
           menu.choice "Returning", -> {User.handle_returning_user}
           menu.choice "New", -> {User.handle_new_user}
+          menu.choice "", -> {exit!}
+          menu.choice "Exit", -> {exit!}
         end
     end
 
@@ -31,8 +33,8 @@ class Interface
             menu.choice "My Playlists", -> {user_object.my_playlists}
             menu.choice "Create Playlist", -> {Playlist.make_new(user_object)}
             menu.choice "Account Information", -> {user_object.account_information}
-            menu.choice "Exit"
-            binding.pry
+            menu.choice "Exit", -> {Interface.run_interface}
+            
 
         end 
     end 
