@@ -30,17 +30,34 @@ class Playlist < ActiveRecord::Base
     def self.make_new(user_object)
         system "clear"
         prompt = TTY::Prompt.new
-        name = prompt.ask("Name your playlist")
-        mood = prompt.ask("Give your playlist a mood")
-        new_playlist = Playlist.create(user_id: user_object.id, name: name, mood: mood)
-        new_playlist.save
-        songs_to_add = Song.display_songs()
-        i = 1
-        songs_to_add.each do |song|
-            Tracklist.create(playlist_id: new_playlist.id, song_id: song.id, track_num: i)
-            i += 1
+        new_playlist_string = prompt.ask("Name your playlist")
+       
+        if user_object.playlists == [] || !(user_object.playlists.map {|playlist| playlist.name}.include?(new_playlist_string))
+
+            mood = prompt.ask("Give your playlist a mood")
+            new_playlist = Playlist.create(user_id: user_object.id, name: new_playlist_string, mood: mood)
+            
+            new_playlist.save
+            songs_to_add = Song.display_songs()
+            i = 1
+
+            songs_to_add.each do |song|
+                new_tracklist = Tracklist.create(playlist_id: new_playlist.id, song_id: song.id, track_num: i)
+                i += 1
+                new_tracklist.save
+                
+            end
+
+            self.list_of_tracks(new_playlist_string, user_object)
+    
+        else
+
+            puts "A Playlist with this name already exists. Please try another name."
+            sleep(3)
+            self.make_new(user_object)
+
         end
-        self.list_of_tracks(name, user_object)
-        
+     
     end 
+
 end 
