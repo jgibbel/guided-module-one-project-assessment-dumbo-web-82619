@@ -44,10 +44,13 @@ class User < ActiveRecord::Base
     end
 
     def my_playlists
-        prompt = TTY::Prompt.new 
         system "clear"
+        prompt = TTY::Prompt.new 
         choices = self.playlists.map {|playlist| playlist.name}
-        new_choice = prompt.select("Your playlists", choices)
+        new_choice = prompt.select("Your playlists ", choices)
+        prompt.select("Exit", Interface.new.main_menu(self))
+        # prompt.on(:keyspace) { |key| Interface.new.main_menu(self)}
+        # binding.pry
         Playlist.list_of_tracks(new_choice)
     end
 

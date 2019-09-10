@@ -18,6 +18,7 @@ class Playlist < ActiveRecord::Base
         name = prompt.ask("Name your playlist")
         mood = prompt.ask("Give your playlist a mood")
         new_playlist = Playlist.create(user_id: user_object.id, name: name, mood: mood)
+        # binding.pry
         songs_to_add = Song.display_songs()
         i = 1
         songs_to_add.each do |song|
