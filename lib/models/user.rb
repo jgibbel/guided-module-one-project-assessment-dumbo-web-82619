@@ -28,12 +28,13 @@ class User < ActiveRecord::Base
             key(:username).ask("What is your username?")
             key(:password).mask("What is your password?", mask: music_note)
         end
-        binding.pry 
-       if User.find_by(username: user_hash["username"]).password == user_hash["password"] 
-        User.find_by(username: user_hash["username"])
-            
-       else TTY::Prompt.new.keypress("Incorrect credentials, press any key to restart")
-        Interface.run_interface
+        
+       if user_object = User.find_by(username: user_hash[:username], password: user_hash[:password])
+
+            return user_object
+
+        else TTY::Prompt.new.keypress("Incorrect credentials, press any key to restart")
+            Interface.run_interface
         end   
     end
 
@@ -56,7 +57,7 @@ class User < ActiveRecord::Base
             menu.choice "Change Username", -> {self.change_username}
             menu.choice "Change Password", -> {self.change_password}
             menu.choice "Delete Account", -> {self.delete_account}
-            menu.choice "Back", -> {}
+            menu.choice "Back", -> {Interface.new.main_menu(self)}
         end 
     end
 
@@ -64,8 +65,17 @@ class User < ActiveRecord::Base
         prompt = TTY::Prompt.new 
         system "clear"
         choices = self.playlists.map {|playlist| playlist.name}
+        if choices.length == 0 
+            choices << "Go create a new Playlist!"
+        end
+        choices << ["","Back"]
         new_choice = prompt.select("Your playlists", choices)
-        Playlist.list_of_tracks(new_choice)
+
+        if new_choice == "Back" || new_choice == "" || new_choice == "Go create a new Playlist!"
+            Interface.new.main_menu(self)
+        else
+            Playlist.list_of_tracks(new_choice)
+        end
     end
 
     def change_name
