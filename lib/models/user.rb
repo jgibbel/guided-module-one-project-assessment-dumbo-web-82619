@@ -5,21 +5,38 @@ class User < ActiveRecord::Base
     # attr_accessor :name, :username, :password 
 
 
+    # def self.handle_returning_user
+    #     puts "What is your username?"
+    #     username = gets.chomp
+    #     if !User.find_by(username: username)
+    #       TTY::Prompt.new.keypress("User not found. Please enter a valid name. Press any key to try again.")
+    #       Interface.run_interface
+    #     else puts "What is your password?"
+    #         password = gets.chomp
+    #         if User.find_by(username: username).password == password 
+    #             User.find_by(username: username)
+    #         else TTY::Prompt.new.keypress("Incorrect password, press any key to restart")
+    #             Interface.run_interface
+    #         end 
+    #     end
+    # end
+
     def self.handle_returning_user
-        puts "What is your username?"
-        username = gets.chomp
-        if !User.find_by(username: username)
-          TTY::Prompt.new.keypress("User not found. Please enter a valid name. Press any key to try again.")
-          Interface.run_interface
-        else puts "What is your password?"
-            password = gets.chomp
-            if User.find_by(username: username).password == password 
-                User.find_by(username: username)
-            else TTY::Prompt.new.keypress("Incorrect password, press any key to restart")
-                Interface.run_interface
-            end 
+        prompt = TTY::Prompt.new
+        music_note = prompt.decorate('🎵')
+        user_hash = prompt.collect do 
+            key(:username).ask("What is your username?")
+            key(:password).mask("What is your password?", mask: music_note)
         end
+        binding.pry 
+       if User.find_by(username: user_hash["username"]).password == user_hash["password"] 
+        User.find_by(username: user_hash["username"])
+            
+       else TTY::Prompt.new.keypress("Incorrect credentials, press any key to restart")
+        Interface.run_interface
+        end   
     end
+
 
     def self.handle_new_user
         name = TTY::Prompt.new.ask("What is your name?")

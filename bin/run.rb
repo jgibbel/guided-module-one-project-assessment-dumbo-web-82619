@@ -1,7 +1,7 @@
 
 require_relative '../config/environment'
     cli = Interface.new 
-    binding.pry 
+    # binding.pry 
     user_object = cli.welcome
 
     # while !user_object do
