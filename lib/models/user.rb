@@ -99,8 +99,14 @@ class User < ActiveRecord::Base
         self.account_information
     end
 
+    
     def delete_account
+        prompt = TTY::Prompt.new
+        if prompt.yes?("PERMANENTLY DELETE")
         self.destroy
         Interface.run_interface
+        else
+        Interface.new.main_menu(self)
+        end
     end
 end 
