@@ -22,7 +22,6 @@ class Interface
         self.prompt.select("Returning or New User?") do |menu|
           menu.choice "Returning", -> {User.handle_returning_user}
           menu.choice "New", -> {User.handle_new_user}
-
         end
     end
 
