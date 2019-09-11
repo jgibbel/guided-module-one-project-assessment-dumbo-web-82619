@@ -61,23 +61,6 @@ class User < ActiveRecord::Base
         end 
     end
 
-    def my_playlists
-        prompt = TTY::Prompt.new 
-        system "clear"
-        choices = self.playlists.map {|playlist| playlist.name}
-        if choices.length == 0 
-            choices << "Go create a new Playlist!"
-        end
-        choices << ["","Back"]
-        new_choice = prompt.select("Your playlists", choices)
-
-        if new_choice == "Back" || new_choice == "" || new_choice == "Go create a new Playlist!"
-            Interface.new.main_menu(self)
-        else
-            Playlist.list_of_tracks(new_choice, self)
-        end
-    end
-
     def change_name
         prompt = TTY::Prompt.new 
         new_name = prompt.ask("What is your new name")
@@ -109,4 +92,25 @@ class User < ActiveRecord::Base
         Interface.new.main_menu(self)
         end
     end
+
+    def my_playlists
+        prompt = TTY::Prompt.new 
+        system "clear"
+
+        choices = self.playlists.map {|playlist| playlist.name}
+        ##ERROR: Playlist.last is not being associated with the user!
+        if choices.length == 0 
+            choices << "Go create a new Playlist!"
+        end
+        binding.pry
+        choices << ["","Back"]
+        new_choice = prompt.select("Your playlists", choices)
+
+        if new_choice == "Back" || new_choice == "" || new_choice == "Go create a new Playlist!"
+            Interface.new.main_menu(self)
+        else
+            Playlist.list_of_tracks(new_choice, self)
+        end
+    end
+
 end 
