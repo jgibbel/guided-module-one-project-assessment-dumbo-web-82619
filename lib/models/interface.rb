@@ -32,6 +32,7 @@ class Interface
         self.prompt.select("Menu Items:") do |menu|  
             menu.choice "My Playlists", -> {user_object.my_playlists}
             menu.choice "Create Playlist", -> {Playlist.make_new(user_object)}
+            menu.choice "Edit Playlist", -> {user_object.display_playlist}
             menu.choice "Account Information", -> {user_object.account_information}
             menu.choice "Exit", -> {Interface.run_interface}
             

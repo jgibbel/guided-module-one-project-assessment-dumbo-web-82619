@@ -93,6 +93,7 @@ class User < ActiveRecord::Base
         end
     end
 
+    
     def my_playlists
         prompt = TTY::Prompt.new 
         system "clear"
@@ -102,7 +103,7 @@ class User < ActiveRecord::Base
         if choices.length == 0 
             choices << "Go create a new Playlist!"
         end
-        binding.pry
+        
         choices << ["","Back"]
         new_choice = prompt.select("Your playlists", choices)
 
@@ -112,5 +113,30 @@ class User < ActiveRecord::Base
             Playlist.list_of_tracks(new_choice, self)
         end
     end
+
+    def display_playlist
+        system "clear"
+        prompt = TTY::Prompt.new 
+        puts "Display Playlists 🎧 🎼"
+        puts ""
+    
+        choices = self.playlists.map {|playlist| playlist.name}
+        ##ERROR: Playlist.last is not being associated with the user!
+        if choices.length == 0 
+            choices << "Go create a new Playlist!"
+        end
+        
+        choices << ["","Back"]
+        new_choice = prompt.select("Select the playlist you want to edit:", choices)
+
+        if new_choice == "Back" || new_choice == "" || new_choice == "Go create a new Playlist!"
+            Interface.new.main_menu(self)
+        else
+            playlist = Playlist.find_by(name:new_choice)
+            playlist.edit_playlist
+        end
+
+    end
+
 
 end 

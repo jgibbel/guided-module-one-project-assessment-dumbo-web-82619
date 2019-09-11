@@ -65,4 +65,70 @@ class Playlist < ActiveRecord::Base
         end
        
     end 
+
+    
+    def edit_playlist()
+        prompt = TTY::Prompt.new 
+        prompt.select("Playlist: #{self.name}, Mood: #{self.mood}") do |menu|
+            menu.choice "Add Song", -> {self.add_song}
+            menu.choice "Remove Song", -> {self.remove_song}
+            menu.choice "Remove Song", -> {self.remove_song}
+            menu.choice "Rename Playlist", -> {self.rename_playlist}
+            menu.choice "Change Mood", -> {self.change_mood}
+            menu.choice "Delete Playlist", -> {self.delete_playlist}
+            menu.choice "Back", -> {Interface.new.main_menu(self)}
+        end 
+    end
+
+    def add_song
+        # Open the list with songs that include?() = false
+        #create a method that updates the playlist with new songs
+
+
+        # prompt = TTY::Prompt.new 
+        # new_name = prompt.ask("What is your username")
+        # self.update(username: new_name)
+        # self.account_information
+    end
+
+    def remove_song
+        # Open a list with current songs
+        # create a method that allows the user to select and delete the song
+
+
+        # prompt = TTY::Prompt.new 
+        # new_name = prompt.ask("What is your new password")
+        # self.update(password: new_name)
+        # self.account_information
+    end
+
+    def rename_playlist
+        prompt = TTY::Prompt.new 
+        new_name = prompt.ask("What is your new Playlist name?")
+        self.update(name: new_name)
+        self.edit_playlist
+    end
+
+    def change_mood
+        prompt = TTY::Prompt.new 
+        new_mood = prompt.ask("What is your new mood for this playlist?")
+        self.update(mood: new_mood)
+        self.edit_playlist
+    end
+
+    
+    def delete_playlist
+        prompt = TTY::Prompt.new
+        if prompt.yes?("PERMANENTLY DELETE")
+        binding.pry
+        self.destroy
+        Interface.new.main_menu(User.find_by(id: self.user_id))
+        else
+        Interface.new.main_menu(User.find_by(id: self.user_id))
+        end
+    end
+
+
+
+
 end 
