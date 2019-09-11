@@ -52,7 +52,7 @@ class Playlist < ActiveRecord::Base
             tracks << ["Empty Playlist"]
         end
         tracks << ["", "Back"]
-        new_choice = prompt.select("Your songs: ", tracks)
+        new_choice = prompt.select("Your songs: ", tracks, per_page: 10)
 
         if new_choice == "Back" || new_choice == "" || new_choice == "Empty Playlist"
             user.my_playlists
@@ -67,40 +67,43 @@ class Playlist < ActiveRecord::Base
     end 
 
     
-    def edit_playlist()
+    def edit_playlist
         prompt = TTY::Prompt.new 
-        prompt.select("Playlist: #{self.name}, Mood: #{self.mood}") do |menu|
-            menu.choice "Add Song", -> {self.add_song}
-            menu.choice "Remove Song", -> {self.remove_song}
-            menu.choice "Remove Song", -> {self.remove_song}
+        prompt.select("Playlist: #{self.name}, Mood: #{self.mood}", per_page: 10) do |menu|
+            menu.choice "Add Song (not working yet)", -> {}#display songs not on Playlist () -> pick and add
+            menu.choice "Remove Song (not working yet)", -> {self.songs_playlist}#display songs on Playlist -> pick and delete
             menu.choice "Rename Playlist", -> {self.rename_playlist}
             menu.choice "Change Mood", -> {self.change_mood}
             menu.choice "Delete Playlist", -> {self.delete_playlist}
-            menu.choice "Back", -> {Interface.new.main_menu(self)}
+            menu.choice "", -> {Interface.new.main_menu(self.user)}
+            menu.choice "Back", -> {Interface.new.main_menu(self.user)}
         end 
     end
 
-    def add_song
-        # Open the list with songs that include?() = false
-        #create a method that updates the playlist with new songs
+    def songs_playlist
+        if self.tracklists.size == 0 
+            puts "You have no songs to be deleted"
+            sleep(3)
+            self.edit_playlist
+        else
+            prompt = TTY::Prompt.new
+            songs = self.songs
+            songs_menu = songs.map {|song| song.title} # converting into string
+            new_choice = prompt.select("Pick the song you wish to delete: ", songs_menu, per_page: 10)
+            song_instance =  Song.all.find_by(title: new_choice)
 
-
-        # prompt = TTY::Prompt.new 
-        # new_name = prompt.ask("What is your username")
-        # self.update(username: new_name)
-        # self.account_information
+            tracklist = Tracklist.all.find_by(playlist_id: self.id, song_id: song_instance.id)
+            tracklist.remove_tracklist()
+        end
     end
 
-    def remove_song
-        # Open a list with current songs
-        # create a method that allows the user to select and delete the song
-
-
-        # prompt = TTY::Prompt.new 
-        # new_name = prompt.ask("What is your new password")
-        # self.update(password: new_name)
-        # self.account_information
+    def songs_not_on_playlist
+        Songs.all - songs_playlist
     end
+
+
+
+    
 
     def rename_playlist
         prompt = TTY::Prompt.new 
@@ -120,11 +123,11 @@ class Playlist < ActiveRecord::Base
     def delete_playlist
         prompt = TTY::Prompt.new
         if prompt.yes?("PERMANENTLY DELETE")
-        binding.pry
+        user_instance = self.user
         self.destroy
-        Interface.new.main_menu(User.find_by(id: self.user_id))
+        Interface.new.main_menu(user_instance)
         else
-        Interface.new.main_menu(User.find_by(id: self.user_id))
+        Interface.new.main_menu(self.user)
         end
     end
 

@@ -52,11 +52,12 @@ class User < ActiveRecord::Base
 
     def account_information
         prompt = TTY::Prompt.new 
-        prompt.select("Name: #{name}, Username: #{username}, Password: #{password}") do |menu|
+        prompt.select("Name: #{name}, Username: #{username}, Password: #{password}", per_page: 10) do |menu|
             menu.choice "Change Name", -> {self.change_name}
             menu.choice "Change Username", -> {self.change_username}
             menu.choice "Change Password", -> {self.change_password}
             menu.choice "Delete Account", -> {self.delete_account}
+            menu.choice "", -> {Interface.new.main_menu(self)}
             menu.choice "Back", -> {Interface.new.main_menu(self)}
         end 
     end
@@ -97,15 +98,17 @@ class User < ActiveRecord::Base
     def my_playlists
         prompt = TTY::Prompt.new 
         system "clear"
-
-        choices = self.playlists.map {|playlist| playlist.name}
+        
+        choices_object = Playlist.all.select {|playlist| playlist.user_id == self.id.to_s}
+        
+        choices = choices_object.map{|playlist| playlist.name}
         ##ERROR: Playlist.last is not being associated with the user!
         if choices.length == 0 
             choices << "Go create a new Playlist!"
         end
         
         choices << ["","Back"]
-        new_choice = prompt.select("Your playlists", choices)
+        new_choice = prompt.select("Your playlists", choices, per_page: 10)
 
         if new_choice == "Back" || new_choice == "" || new_choice == "Go create a new Playlist!"
             Interface.new.main_menu(self)
@@ -120,14 +123,15 @@ class User < ActiveRecord::Base
         puts "Display Playlists 🎧 🎼"
         puts ""
     
-        choices = self.playlists.map {|playlist| playlist.name}
-        ##ERROR: Playlist.last is not being associated with the user!
+        choices_object = Playlist.all.select {|playlist| playlist.user_id == self.id.to_s}
+        choices = choices_object.map{|playlist| playlist.name}
+
         if choices.length == 0 
             choices << "Go create a new Playlist!"
         end
         
         choices << ["","Back"]
-        new_choice = prompt.select("Select the playlist you want to edit:", choices)
+        new_choice = prompt.select("Select the playlist you want to edit:", choices, per_page: 10)
 
         if new_choice == "Back" || new_choice == "" || new_choice == "Go create a new Playlist!"
             Interface.new.main_menu(self)
