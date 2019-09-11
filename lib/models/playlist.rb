@@ -21,7 +21,7 @@ class Playlist < ActiveRecord::Base
             new_playlist.save
             
 
-            songs_to_add = Song.display_songs()
+            songs_to_add = Song.search_songs_menu(new_playlist)
             i = 1
 
             songs_to_add.each do |song|
@@ -70,7 +70,7 @@ class Playlist < ActiveRecord::Base
     def edit_playlist
         prompt = TTY::Prompt.new 
         prompt.select("Playlist: #{self.name}, Mood: #{self.mood}", per_page: 10) do |menu|
-            menu.choice "Add Song (not working yet)", -> {Song.search_songs_menu(self) }#display songs not on Playlist () -> pick and add
+            menu.choice "Add Song (not working yet)", -> {Song.search_songs_menu(self)}#display songs not on Playlist () -> pick and add
             menu.choice "Remove Song (not working yet)", -> {self.songs_playlist}#display songs on Playlist -> pick and delete
             menu.choice "Rename Playlist", -> {self.rename_playlist}
             menu.choice "Change Mood", -> {self.change_mood}
