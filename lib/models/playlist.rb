@@ -47,7 +47,6 @@ class Playlist < ActiveRecord::Base
     def self.song_to_url(song, artist)
         search = song + "+" + artist
         search.sub("","+")
-        
         return search
     end
 
