@@ -20,6 +20,7 @@ p1 = Playlist.create(name: "playlist1", user_id: u1.id, mood: "vibez")
 # s8= Song.create(title: "Song8", artist: "Artist2", genre: "Genre2")
 
 song_seeds = [
+["Minnie Ripperton", "Rhythm & Blues", ["Loving You", "Lover and Friend"]],
 ["James Brown", "Soul", ["Get Up Offa That Thing", "I Got the Feeling", "Cold Sweat", "Get Up Sex Machine", "Papa Don't Take No Mess"]],
 ["Post Malone", "Rap", ["Sunflower", "White Iverson", "Congratulations", "Psycho"]],
 ["Eminem", "Rap", ["The Real Slim Shady", "'Till I Collapse", "Love the Way You Lie", "Cleanin' Out My Closet", "Rap God"]],

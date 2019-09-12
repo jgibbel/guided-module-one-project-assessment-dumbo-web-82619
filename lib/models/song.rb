@@ -21,7 +21,7 @@ class Song < ActiveRecord::Base
         song_list = Song.all.map {|song| song.title}.sort 
         song_choice = prompt.select("Songs:", song_list, per_page: 40) 
         song_as_array = [song_choice]
-        binding.pry
+        # binding.pry
         self.add_selected_songs(song_as_array, playlist_instance)
     end
 
@@ -44,7 +44,7 @@ class Song < ActiveRecord::Base
         artist_choice = prompt.select("Artists:", artist_list, per_page: 10) 
         artist_songs = Song.all.select {|song| song.artist == artist_choice}.map {|song| song.title}
         song_select = prompt.multi_select("Pick Songs by #{artist_choice}", artist_songs)
-        binding.pry
+        # binding.pry
         self.add_selected_songs(song_select, playlist_instance)
     end
 
@@ -114,7 +114,7 @@ class Song < ActiveRecord::Base
             Tracklist.create(playlist_id: playlist_instance.id, song_id: song.id, track_num: i)
             i += 1 
         end 
-        binding.pry
+        # binding.pry
         self.search_songs_menu(playlist_instance)
     end
 
