@@ -66,6 +66,10 @@ class Playlist < ActiveRecord::Base
        
     end 
 
+    # user has selected a song to remove from the tracklist this has is a string
+    ###  track num is set to i. 
+    # if playlist.tracklist.find_by track_num : i+1 (7),.update track_num i(6), and do while i < tracklist.length(15) - i (e.g. 6)  
+
     
     def edit_playlist
         prompt = TTY::Prompt.new 
