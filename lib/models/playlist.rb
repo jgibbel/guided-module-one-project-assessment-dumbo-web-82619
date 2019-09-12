@@ -66,22 +66,29 @@ class Playlist < ActiveRecord::Base
         #     self.list_of_tracks(playlist_name, user)
         else
 
-         @output = AudioPlayback::Device::Output.gets
-
-        options = {
-        :channels => [0,1],
-        :latency => 1,
-        :output_device => @output
-        }
-        @playback = AudioPlayback.play("audio_files/#{music_file}.mp3")
-        # @playback = AudioPlayback.play("test/media/1-stereo-44100.wav", options)
-
-        # Play in the foreground
-        @playback.block
+            fileplayer(music_file)
 
 
-         binding.pry 
-         0
+
+
+
+
+        #  @output = AudioPlayback::Device::Output.gets
+
+        # options = {
+        # :channels => [0,1],
+        # :latency => 1,
+        # :output_device => @output
+        # }
+        # @playback = AudioPlayback.play("audio_files/#{music_file}.mp3")
+        # # @playback = AudioPlayback.play("test/media/1-stereo-44100.wav", options)
+
+        # # Play in the foreground
+        # @playback.block
+
+
+        #  binding.pry 
+        #  0
        
         end 
     end
