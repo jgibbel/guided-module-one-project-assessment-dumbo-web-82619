@@ -92,21 +92,21 @@ class User < ActiveRecord::Base
 
     def change_name
         prompt = TTY::Prompt.new 
-        new_name = prompt.ask("What is your new name")
+        new_name = prompt.ask("What is your name?")
         self.update(name: new_name)
         self.account_information
     end
     
     def change_username
         prompt = TTY::Prompt.new 
-        new_name = prompt.ask("What is your username")
+        new_name = prompt.ask("What is your NEW username?")
         self.update(username: new_name)
         self.account_information
     end
 
     def change_password
         prompt = TTY::Prompt.new 
-        new_name = prompt.ask("What is your new password")
+        new_name = prompt.ask("What is your NEW password?")
         self.update(password: new_name)
         self.account_information
     end
@@ -114,7 +114,7 @@ class User < ActiveRecord::Base
     
     def delete_account
         prompt = TTY::Prompt.new
-        if prompt.yes?("PERMANENTLY DELETE")
+        if prompt.yes?("Are you sure you want to PERMANENTLY DELETE your account?")
         self.destroy
         Interface.run_interface
         else
@@ -136,7 +136,7 @@ class User < ActiveRecord::Base
         end
         
         choices << ["","Back"]
-        new_choice = prompt.select("Your playlists", choices, per_page: 10)
+        new_choice = prompt.select("Here is a list of all your Playlists", choices, per_page: 10)
 
         if new_choice == "Back" || new_choice == "" || new_choice == "Go create a new Playlist!"
             Interface.new.main_menu(self)

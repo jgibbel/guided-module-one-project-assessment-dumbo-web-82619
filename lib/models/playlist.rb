@@ -126,7 +126,7 @@ class Playlist < ActiveRecord::Base
     
     def delete_playlist
         prompt = TTY::Prompt.new
-        if prompt.yes?("PERMANENTLY DELETE")
+        if prompt.yes?("Are you sure you want to PERMANENTLY DELETE your Playlist?")
         user_instance = self.user
         self.destroy
         Interface.new.main_menu(user_instance)
