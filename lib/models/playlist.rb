@@ -1,4 +1,6 @@
+# require 'launchy'
 class Playlist < ActiveRecord::Base 
+
     belongs_to :user
     has_many :tracklists
     has_many :songs, through: :tracklists 
@@ -19,7 +21,6 @@ class Playlist < ActiveRecord::Base
             mood = prompt.ask("Give your playlist a mood: ")
             new_playlist = Playlist.create(user_id: user_object.id, name: new_playlist_string, mood: mood)
             new_playlist.save
-            
 
             songs_to_add = Song.search_songs_menu(new_playlist)
             i = 1
@@ -34,91 +35,48 @@ class Playlist < ActiveRecord::Base
             self.list_of_tracks(new_playlist_string, user_object)
     
         else
-
             puts "A Playlist with this name already exists. Please try another name."
             sleep(3)
             self.make_new(user_object)
-
         end
     end 
-
-    # def self.list_of_tracks(playlist_name, user)
-    #     prompt = TTY::Prompt.new
-    #     system "clear"
-
-    #     list = self.find_by(name: playlist_name)
-    #     tracks = list.tracklists.map {|track| track.song.title}
-    #     if tracks.size == 0 
-    #         tracks << ["Empty Playlist"]
-    #     end
-    #     tracks << ["", "Back"]
-    #     new_choice = prompt.select("Your songs: ", tracks, per_page: 10)
-
-    #     if new_choice == "Back" || new_choice == "" || new_choice == "Empty Playlist"
-    #         user.my_playlists
-    #     else
-    #         puts "Playing song:"
-    #         puts ""
-    #         puts "#{new_choice} by #{Song.find_by(title: new_choice).artist}"
-    #         sleep(5)
-    #         self.list_of_tracks(playlist_name, user)
-    #     end
-       
-    # end 
 
     def self.list_of_tracks(playlist_name, user)
         prompt = TTY::Prompt.new
         system "clear"
         list = self.find_by(name: playlist_name)
         tracks = list.songs.map {|song| "#{song.title} by #{song.artist}"}
-        # binding.pry
         if tracks.size == 0 
             tracks << ["Empty Playlist"]
         end
         tracks << ["", "Back"]
         new_choice = prompt.select("Your songs: ", tracks, per_page: 10)
         music_file = new_choice.split(" by ").first
+        url_artist = new_choice.split(" by ").last
         if new_choice == "Back" || new_choice == "" || new_choice == "Empty Playlist"
             user.my_playlists
- #
-            # else
-        #     puts "Playing song:"
-        #     puts ""
-        #     puts "#{new_choice} by #{Song.find_by(title: new_choice).artist}"
-        #     sleep(5)
-        #     self.list_of_tracks(playlist_name, user)
         else
-        #  @output = AudioPlayback::Device::Output.gets
-        # options = {
-        # :channels => [0,1],
-        # :latency => 1,
-        # :output_device => @output
-        # }
-        # binding.pry
-        # @playback = AudioPlayback.play("lib/audio_files/#{music_file}.mp3")
-        # # @playback = AudioPlayback.play("test/media/1-stereo-44100.wav", options)
-        # # Play in the foreground
-        # @playback.block
-        #  binding.pry 
-        #  0
         pid = fork{ exec 'afplay', "lib/audio_files/#{music_file}.mp3" }
         prompt.select("Playing") do |menu|
             menu.choice "Stop", -> {Playlist.kill_helper(playlist_name, user)}
-            menu.choice "Explore More", -> {}
+            menu.choice "Want to see it on YouTube", -> {self.song_to_url(music_file, url_artist, playlist_name, user)}
             end 
         end 
     end
-    # user has selected a song to remove from the tracklist this has is a string
-    ###  track num is set to i. 
-    # if playlist.tracklist.find_by track_num : i+1 (7),.update track_num i(6), and do while i < tracklist.length(15) - i (e.g. 6)
+ 
     def self.kill_helper(playlist_name, user)
-        #killall afplay
-        #system "killall afplay"
         pid = fork{ exec 'killall afplay' }
         Playlist.list_of_tracks(playlist_name, user)
     end
 
-    
+    def self.song_to_url(song, artist, playlist_name, user)
+        search = song + "+" + artist
+        song = search.sub("","+")
+        Launchy.open("https://www.youtube.com/results?search_query=#{song}")
+        self.list_of_tracks(playlist_name, user)
+    end
+
+
     def edit_playlist
         prompt = TTY::Prompt.new 
         prompt.select("Playlist: #{self.name}, Mood: #{self.mood}", per_page: 10) do |menu|
@@ -149,14 +107,6 @@ class Playlist < ActiveRecord::Base
         end
     end
 
-    def songs_not_on_playlist
-        Songs.all - songs_playlist
-    end
-
-
-
-    
-
     def rename_playlist
         prompt = TTY::Prompt.new 
         new_name = prompt.ask("What is your new Playlist name?")
@@ -170,7 +120,6 @@ class Playlist < ActiveRecord::Base
         self.update(mood: new_mood)
         self.edit_playlist
     end
-
     
     def delete_playlist
         prompt = TTY::Prompt.new
@@ -182,8 +131,4 @@ class Playlist < ActiveRecord::Base
         Interface.new.main_menu(self.user)
         end
     end
-
-
-
-
 end 

@@ -2,53 +2,56 @@ class User < ActiveRecord::Base
     has_many :playlists
     has_many :tracklists, through: :playlists
 
-    # attr_accessor :name, :username, :password 
-
-
-    # def self.handle_returning_user
-    #     puts "What is your username?"
-    #     username = gets.chomp
-    #     if !User.find_by(username: username)
-    #       TTY::Prompt.new.keypress("User not found. Please enter a valid name. Press any key to try again.")
-    #       Interface.run_interface
-    #     else puts "What is your password?"
-    #         password = gets.chomp
-    #         if User.find_by(username: username).password == password 
-    #             User.find_by(username: username)
-    #         else TTY::Prompt.new.keypress("Incorrect password, press any key to restart")
-    #             Interface.run_interface
-    #         end 
-    #     end
-    # end
-
     def self.handle_returning_user
         prompt = TTY::Prompt.new
         music_note = prompt.decorate('🎵')
         user_hash = prompt.collect do 
-            key(:username).ask("What is your username?")
-            key(:password).mask("What is your password?", mask: music_note)
+            key(:username).ask("What is your username? ")
+            key(:password).mask("What is your password? ", mask: music_note)
         end
         
        if user_object = User.find_by(username: user_hash[:username], password: user_hash[:password])
 
             return user_object
 
-        else TTY::Prompt.new.keypress("Incorrect credentials, press any key to restart")
+        else TTY::Prompt.new.keypress("Incorrect credentials, press any key to restart.")
             Interface.run_interface
         end   
     end
 
-
     def self.handle_new_user
-        name = TTY::Prompt.new.ask("What is your name?")
-        username = TTY::Prompt.new.ask("Set a username") 
-        password = TTY::Prompt.new.ask("Set a password")
-        User.create(name: name, username: username, password: password)
+        name = TTY::Prompt.new.ask("What is your name? ")
+        new_username = TTY::Prompt.new.ask("Set a username: ") 
+        
+        if new_username == nil || new_username == ""  
+            self.invalid_new_user()
+        elsif User.find_by(username: new_username) != nil
+            self.invalid_new_user()
+        else
+            password = self.password_check()
+            User.create(name: name, username: new_username, password: password)
+        end
     end
 
-    # def new_playlist(playlist_name)
-    #     Playlist.create(self, playlist_name)
-    # end 
+    def self.invalid_new_user
+        system "clear"
+        puts "Invalid or existing username. Please, try it again."
+        sleep (2)
+        Interface.run_interface
+    end
+
+    def self.password_check
+        password = TTY::Prompt.new.ask("Set a password:")
+
+        if password == nil || password == ""
+            system "clear"
+            puts "Invalid Password. Please, try it again."
+            sleep (2)
+            self.handle_new_user
+        else
+            return password
+        end
+    end
 
     def account_information
         prompt = TTY::Prompt.new 
@@ -82,7 +85,6 @@ class User < ActiveRecord::Base
         self.update(password: new_name)
         self.account_information
     end
-
     
     def delete_account
         prompt = TTY::Prompt.new
@@ -102,7 +104,7 @@ class User < ActiveRecord::Base
         choices_object = Playlist.all.select {|playlist| playlist.user_id == self.id.to_s}
         
         choices = choices_object.map{|playlist| playlist.name}
-        ##ERROR: Playlist.last is not being associated with the user!
+    
         if choices.length == 0 
             choices << "Go create a new Playlist!"
         end

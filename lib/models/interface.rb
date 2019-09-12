@@ -1,5 +1,3 @@
-# require 'tty-prompt'
-
 class Interface
 
     attr_reader :prompt
@@ -9,14 +7,16 @@ class Interface
         @prompt = TTY::Prompt.new 
     end 
 
+
     def self.run_interface
         cli = self.new
         user_object = cli.welcome
-        cli.main_menu(user_object)
+        cli.main_menu(user_object) 
     end
 
     def welcome
         system "clear"
+        self.art
         puts "Welcome to CLI Playlist Maker!! 🎧 🎼"
         puts ""
         self.prompt.select("Returning or New User?") do |menu|
@@ -36,8 +36,43 @@ class Interface
             menu.choice "Account Information", -> {user_object.account_information}
             menu.choice "", -> {Interface.run_interface}
             menu.choice "Exit", -> {Interface.run_interface}
-            
-
         end 
     end 
-end 
+
+    def art 
+        system "clear"
+        art = puts <<-"EOF"
+
+                      .,,,.
+                   .;;;;;;;;;,
+                  ;;;'    `;;;,
+                 ;;;'      `;;;
+                 ;;;        ;;;
+                 ;;;.      ;;;'
+                 `;;;.    ;;;'
+                  `;;;.  ;;;'
+                   `;;',;;'
+                    ,;;;'
+                 ,;;;',;' ...,,,,...
+              ,;;;'    ,;;;;;;;;;;;;;;,
+           ,;;;'     ,;;;;;;;;;;;;;;;;;;,
+          ;;;;'     ;;;',,,   `';;;;;;;;;;
+         ;;;;,      ;;   ;;;     ';;;;;;;;;
+        ;;;;;;       '    ;;;      ';;;;;;;
+        ;;;;;;            .;;;      ;;;;;;;
+        ;;;;;;,            ;;;;     ;;;;;;'
+         ;;;;;;,            ;;;;   .;;;;;'
+          `;;;;;;,           ;;;; ,;;;;;'
+           `;;;;;;;,,,,,,,,,, ;;;; ;;;'
+              `;;;;;;;;;;;;;;; ;;;; '
+                  ''''''''''''' ;;;.
+                       .;;;.    `;;;.
+                      ;;;; '     ;;;;
+                      ;;;;,,,..,;;;;;
+                      `;;;;;;;;;;;;;'
+                        `;;;;;;;;;'
+
+        EOF
+        art
+    end
+end
