@@ -16,13 +16,33 @@ class Song < ActiveRecord::Base
         # binding.pry
     end
 
+    def self.menu_back(array, string)
+        array << ["", "Back"]
+        choice = TTY::Prompt.new.select(string, array, per_page: 11)
+        if choice == "Back" || choice == ""
+            return nil
+        else
+            choice
+        end
+    end
+
+
     def self.sort_by_title(playlist_instance) 
         prompt = TTY::Prompt.new
-        song_list = Song.all.map {|song| song.title}.sort 
-        song_choice = prompt.select("Songs:", song_list, per_page: 40) 
+        song_list = Song.all.map {|song| "#{song.title} by #{song.artist}"}.sort 
+        # song_list << ["", "Back"]
+        song_choice = self.menu_back(song_list, "Songs:")   
+        if !song_choice
+        self.search_songs_menu(playlist_instance)
+        # song_choice = prompt.select("Songs:", song_list, per_page: 40)
+        # if song_choice == "Back" || song_choice == ""
+        #     self.search_songs_menu(playlist_instance)
+        else
+        song_choice = song_choice.split(" by ").first
         song_as_array = [song_choice]
         # binding.pry
         self.add_selected_songs(song_as_array, playlist_instance)
+        end
     end
 
 
@@ -108,7 +128,12 @@ class Song < ActiveRecord::Base
             tracks = Tracklist.all.select {|track| track.playlist_id = playlist_instance.id}
             # binding.pry
             nums = tracks.map {|track| track.track_num.to_i}.sort
+            binding.pry
+            if nums == []
+                i = 1
+            else 
             i = nums.last + 1 
+            end
         song_array.each do |songstring| 
             song = Song.all.find_by(title: songstring)
             Tracklist.create(playlist_id: playlist_instance.id, song_id: song.id, track_num: i)
