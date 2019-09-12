@@ -21,7 +21,7 @@ class Song < ActiveRecord::Base
         song_list = Song.all.map {|song| song.title}.sort 
         song_choice = prompt.select("Songs:", song_list, per_page: 40) 
         song_as_array = [song_choice]
-        binding.pry
+        # binding.pry
         self.add_selected_songs(song_as_array, playlist_instance)
     end
 
@@ -99,6 +99,25 @@ class Song < ActiveRecord::Base
     end 
 
 
+    # def self.add_selected_songs(song_array, playlist_instance)
+    #     # if song_array.class != Array 
+    #     #     song_object = song_array 
+    #     #     song_array = []
+    #     #     song_title_array << song_object 
+    #     # end 
+    #         tracks = Tracklist.all.select {|track| track.playlist_id = playlist_instance.id}
+    #         # binding.pry
+    #         nums = tracks.map {|track| track.track_num.to_i}.sort
+    #         i = nums.last + 1 
+    #     song_array.each do |songstring| 
+    #         song = Song.all.find_by(title: songstring)
+    #         Tracklist.create(playlist_id: playlist_instance.id, song_id: song.id, track_num: i)
+    #         i += 1 
+    #     end 
+    #     binding.pry
+    #     self.search_songs_menu(playlist_instance)
+    # end
+
     def self.add_selected_songs(song_array, playlist_instance)
         # if song_array.class != Array 
         #     song_object = song_array 
@@ -108,13 +127,18 @@ class Song < ActiveRecord::Base
             tracks = Tracklist.all.select {|track| track.playlist_id = playlist_instance.id}
             # binding.pry
             nums = tracks.map {|track| track.track_num.to_i}.sort
+            # binding.pry
+            if nums == []
+                i = 1
+            else 
             i = nums.last + 1 
+            end
         song_array.each do |songstring| 
             song = Song.all.find_by(title: songstring)
             Tracklist.create(playlist_id: playlist_instance.id, song_id: song.id, track_num: i)
             i += 1 
         end 
-        binding.pry
+        # binding.pry
         self.search_songs_menu(playlist_instance)
     end
 
