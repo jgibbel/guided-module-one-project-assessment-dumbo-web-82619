@@ -102,12 +102,21 @@ class Playlist < ActiveRecord::Base
         #  binding.pry 
         #  0
         pid = fork{ exec 'afplay', "lib/audio_files/#{music_file}.mp3" }
-       
+        prompt.select("Playing") do |menu|
+            menu.choice "Stop", -> {Playlist.kill_helper(playlist_name, user)}
+            menu.choice "Explore More", -> {}
+            end 
         end 
     end
     # user has selected a song to remove from the tracklist this has is a string
     ###  track num is set to i. 
     # if playlist.tracklist.find_by track_num : i+1 (7),.update track_num i(6), and do while i < tracklist.length(15) - i (e.g. 6)
+    def self.kill_helper(playlist_name, user)
+        #killall afplay
+        #system "killall afplay"
+        pid = fork{ exec 'killall afplay' }
+        Playlist.list_of_tracks(playlist_name, user)
+    end
 
     
     def edit_playlist
