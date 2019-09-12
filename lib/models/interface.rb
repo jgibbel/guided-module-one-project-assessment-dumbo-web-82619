@@ -20,7 +20,6 @@ class Interface
     def welcome
         system "clear"
         self.art
-        
         puts "Welcome to CLI Playlist Maker!! 🎧 🎼"
         puts ""
         self.prompt.select("Returning or New User?") do |menu|
