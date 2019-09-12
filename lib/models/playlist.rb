@@ -42,10 +42,33 @@ class Playlist < ActiveRecord::Base
         end
     end 
 
+    # def self.list_of_tracks(playlist_name, user)
+    #     prompt = TTY::Prompt.new
+    #     system "clear"
+
+    #     list = self.find_by(name: playlist_name)
+    #     tracks = list.tracklists.map {|track| track.song.title}
+    #     if tracks.size == 0 
+    #         tracks << ["Empty Playlist"]
+    #     end
+    #     tracks << ["", "Back"]
+    #     new_choice = prompt.select("Your songs: ", tracks, per_page: 10)
+
+    #     if new_choice == "Back" || new_choice == "" || new_choice == "Empty Playlist"
+    #         user.my_playlists
+    #     else
+    #         puts "Playing song:"
+    #         puts ""
+    #         puts "#{new_choice} by #{Song.find_by(title: new_choice).artist}"
+    #         sleep(5)
+    #         self.list_of_tracks(playlist_name, user)
+    #     end
+       
+    # end 
+
     def self.list_of_tracks(playlist_name, user)
         prompt = TTY::Prompt.new
         system "clear"
-
         list = self.find_by(name: playlist_name)
         tracks = list.songs.map {|song| "#{song.title} by #{song.artist}"}
         # binding.pry
@@ -65,36 +88,35 @@ class Playlist < ActiveRecord::Base
         #     sleep(5)
         #     self.list_of_tracks(playlist_name, user)
         else
-
-            fileplayer(music_file)
-
-
-
-
-
-
         #  @output = AudioPlayback::Device::Output.gets
-
         # options = {
         # :channels => [0,1],
         # :latency => 1,
         # :output_device => @output
         # }
-        # @playback = AudioPlayback.play("audio_files/#{music_file}.mp3")
+        # binding.pry
+        # @playback = AudioPlayback.play("lib/audio_files/#{music_file}.mp3")
         # # @playback = AudioPlayback.play("test/media/1-stereo-44100.wav", options)
-
         # # Play in the foreground
         # @playback.block
-
-
         #  binding.pry 
         #  0
-       
+        pid = fork{ exec 'afplay', "lib/audio_files/#{music_file}.mp3" }
+        prompt.select("Playing") do |menu|
+            menu.choice "Stop", -> {Playlist.kill_helper(playlist_name, user)}
+            menu.choice "Explore More", -> {}
+            end 
         end 
     end
     # user has selected a song to remove from the tracklist this has is a string
     ###  track num is set to i. 
-    # if playlist.tracklist.find_by track_num : i+1 (7),.update track_num i(6), and do while i < tracklist.length(15) - i (e.g. 6)  
+    # if playlist.tracklist.find_by track_num : i+1 (7),.update track_num i(6), and do while i < tracklist.length(15) - i (e.g. 6)
+    def self.kill_helper(playlist_name, user)
+        #killall afplay
+        #system "killall afplay"
+        pid = fork{ exec 'killall afplay' }
+        Playlist.list_of_tracks(playlist_name, user)
+    end
 
     
     def edit_playlist

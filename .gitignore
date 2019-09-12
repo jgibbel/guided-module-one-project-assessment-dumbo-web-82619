@@ -5,7 +5,9 @@ log
 node_modules
 out
 tmp
+lib/audio_files
 
+*.mp3
 *.iml
 *.log
 *.swp

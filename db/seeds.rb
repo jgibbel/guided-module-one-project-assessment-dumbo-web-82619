@@ -19,14 +19,29 @@ p1 = Playlist.create(name: "playlist1", user_id: u1.id, mood: "vibez")
 # s7= Song.create(title: "Song7", artist: "Artist2", genre: "Genre2")
 # s8= Song.create(title: "Song8", artist: "Artist2", genre: "Genre2")
 
+# song_seeds = [
+# ["James Brown", "Soul", ["Get Up Offa That Thing", "I Got the Feeling", "Cold Sweat", "Get Up Sex Machine", "Papa Don't Take No Mess"]],
+# ["Post Malone", "Rap", ["Sunflower", "White Iverson", "Congratulations", "Psycho"]],
+# ["Eminem", "Rap", ["The Real Slim Shady", "'Till I Collapse", "Love the Way You Lie", "Cleanin' Out My Closet", "Rap God"]],
+# ["Ol' Dirty Bastard", "Rap", ["Got Your Money", "Shimmy Shimmy Ya", "Tearz", "Protect Ya Neck", "Triumph"]],
+# ["Lady Gaga", "Pop", ["Shallow", "Poker Face", "Bad Romance", "Million Reasons", "Applause", "Alejandro", "Judas"]],
+# ["Kanye", "Rap",  ["Gold Digger", "Stronger", "Heartless", "Flashing Lights", "Mercy", "All of the Lights", "Fade"]]
+# ]
+
+# song_seeds.each do |artist|
+#     artist[2].each do |title|
+#         Song.create(title: title, artist: artist[0], genre: artist[1])
+#     end 
+# end
+
 song_seeds = [
-["Minnie Ripperton", "Rhythm & Blues", ["Loving You", "Lover and Friend"]],
-["James Brown", "Soul", ["Get Up Offa That Thing", "I Got the Feeling", "Cold Sweat", "Get Up Sex Machine", "Papa Don't Take No Mess"]],
-["Post Malone", "Rap", ["Sunflower", "White Iverson", "Congratulations", "Psycho"]],
-["Eminem", "Rap", ["The Real Slim Shady", "'Till I Collapse", "Love the Way You Lie", "Cleanin' Out My Closet", "Rap God"]],
-["Ol' Dirty Bastard", "Rap", ["Got Your Money", "Shimmy Shimmy Ya", "Tearz", "Protect Ya Neck", "Triumph"]],
-["Lady Gaga", "Pop", ["Shallow", "Poker Face", "Bad Romance", "Million Reasons", "Applause", "Alejandro", "Judas"]],
-["Kanye", "Rap",  ["Gold Digger", "Stronger", "Heartless", "Flashing Lights", "Mercy", "All of the Lights", "Fade"]]
+["Beyoncé", "Pop", ["Jealous", "Partition", "No Angel"]],
+["Bbymutha", "Rap", ["Dancin On The Dick", "Indian Hair"]],
+["Angie Stone", "RnB", ["Green Grass Vapours", "No More Rain (In This Cloud)"]],
+["Doja Cat", "Rap",  ["Ice Cream Pussy", "Mace Windu"]],
+["Chance the Rapper", "Rap", ["Juice", "Lost (ft. Noname)"]],
+["Adele", "Ballad", ["Rolling In The Deep", "Rumor Has It", "Set Fire To The Rain"]],
+["Awkwafina", "Rap", ["NYC Bitches", "Peggy Bundy", "Yellow Ranger"]]
 ]
 
 song_seeds.each do |artist|
