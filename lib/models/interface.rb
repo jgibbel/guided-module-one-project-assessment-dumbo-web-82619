@@ -29,7 +29,7 @@ class Interface
 
     def main_menu(user_object)
         system "clear"
-        self.prompt.select("Menu Items:") do |menu|  
+        self.prompt.select("Menu Items:") do |menu| 
             menu.choice "My Playlists", -> {user_object.my_playlists}
             menu.choice "Create Playlist", -> {Playlist.make_new(user_object)}
             menu.choice "Edit Playlist", -> {user_object.display_playlist}
