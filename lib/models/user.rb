@@ -4,7 +4,6 @@ class User < ActiveRecord::Base
 
     # attr_accessor :name, :username, :password 
 
-
     # def self.handle_returning_user
     #     puts "What is your username?"
     #     username = gets.chomp
@@ -21,30 +20,59 @@ class User < ActiveRecord::Base
     #     end
     # end
 
+    def self.invalid_new_user
+        system "clear"
+        puts "Invalid or existing username. Please, try it again."
+        sleep (2)
+        Interface.run_interface
+    end
+
+    def self.password_check
+        password = TTY::Prompt.new.ask("Set a password:")
+
+        if password == nil || password == ""
+            system "clear"
+            puts "Invalid Password. Please, try it again."
+            sleep (2)
+            self.handle_new_user
+        else
+            return password
+        end
+    end
+
     def self.handle_returning_user
         prompt = TTY::Prompt.new
         music_note = prompt.decorate('🎵')
         user_hash = prompt.collect do 
-            key(:username).ask("What is your username?")
-            key(:password).mask("What is your password?", mask: music_note)
+            key(:username).ask("What is your username? ")
+            key(:password).mask("What is your password? ", mask: music_note)
         end
         
        if user_object = User.find_by(username: user_hash[:username], password: user_hash[:password])
 
             return user_object
 
-        else TTY::Prompt.new.keypress("Incorrect credentials, press any key to restart")
+        else TTY::Prompt.new.keypress("Incorrect credentials, press any key to restart.")
             Interface.run_interface
         end   
     end
 
 
     def self.handle_new_user
-        name = TTY::Prompt.new.ask("What is your name?")
-        username = TTY::Prompt.new.ask("Set a username") 
-        password = TTY::Prompt.new.ask("Set a password")
-        User.create(name: name, username: username, password: password)
+        name = TTY::Prompt.new.ask("What is your name? ")
+        new_username = TTY::Prompt.new.ask("Set a username: ") 
+        
+        if new_username == nil || new_username == ""  
+            self.invalid_new_user()
+        elsif User.find_by(username: new_username) != nil
+            self.invalid_new_user()
+        else
+            password = self.password_check()
+            User.create(name: name, username: new_username, password: password)
+        end
     end
+
+    #User.find_by(username: username)
 
     # def new_playlist(playlist_name)
     #     Playlist.create(self, playlist_name)
