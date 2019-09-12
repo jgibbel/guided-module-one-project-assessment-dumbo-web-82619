@@ -1,5 +1,6 @@
 # require 'tty-prompt'
 
+
 class Interface
 
     attr_reader :prompt
@@ -13,11 +14,13 @@ class Interface
         cli = self.new
         user_object = cli.welcome
         cli.main_menu(user_object)
+        
     end
 
     def welcome
         system "clear"
         self.art
+        
         puts "Welcome to CLI Playlist Maker!! 🎧 🎼"
         puts ""
         self.prompt.select("Returning or New User?") do |menu|

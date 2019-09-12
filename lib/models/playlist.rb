@@ -1,3 +1,5 @@
+require 'launchy'
+
 class Playlist < ActiveRecord::Base 
     belongs_to :user
     has_many :tracklists
@@ -42,6 +44,13 @@ class Playlist < ActiveRecord::Base
         end
     end 
 
+    def self.song_to_url(song, artist)
+        search = song + "+" + artist
+        search.sub("","+")
+        
+        return search
+    end
+
     def self.list_of_tracks(playlist_name, user)
         prompt = TTY::Prompt.new
         system "clear"
@@ -60,11 +69,17 @@ class Playlist < ActiveRecord::Base
             puts "Playing song:"
             puts ""
             puts "#{new_choice} by #{Song.find_by(title: new_choice).artist}"
+
+             
+            song = self.song_to_url(new_choice, Song.find_by(title: new_choice).artist)
+            Launchy.open("https://www.youtube.com/results?search_query=#{song}")
             sleep(5)
             self.list_of_tracks(playlist_name, user)
         end
        
     end 
+
+    
 
     # user has selected a song to remove from the tracklist this has is a string
     ###  track num is set to i. 
