@@ -54,18 +54,7 @@ class Playlist < ActiveRecord::Base
         end
         tracks << ["", "Back"]
         new_choice = prompt.select("Your songs: ", tracks, per_page: 10)
-     
-     
-     
         music_file = new_choice.split(" by ").first
-        
-     
-        
-     
-     
-     
-     
-     
         if new_choice == "Back" || new_choice == "" || new_choice == "Empty Playlist"
             user.my_playlists
  #
