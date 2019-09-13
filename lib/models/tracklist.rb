@@ -7,7 +7,7 @@ class Tracklist < ActiveRecord::Base
         # create a method that allows the user to select and delete the song
         prompt = TTY::Prompt.new
         playlist_instance = self.playlist
-        if prompt.yes?("Are you sure you want to PERMANENTLY DELETE this tracklist?")
+        if prompt.yes?("Are you sure you want to PERMANENTLY DELETE this track from your playlist?")
         self.destroy
         playlist_instance.edit_playlist
         else

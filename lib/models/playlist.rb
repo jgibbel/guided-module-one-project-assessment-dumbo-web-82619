@@ -8,9 +8,9 @@ class Playlist < ActiveRecord::Base
     def self.make_new(user_object)
         system "clear"
         prompt = TTY::Prompt.new
-        new_playlist_string = prompt.ask("Name your playlist: ") 
+        new_playlist_string = prompt.ask("Give your playlist a name: ") 
 
-        if new_playlist_string == ""
+        if new_playlist_string == nil
             puts "Your Playlist must have a name."
             sleep(3)
             self.make_new(user_object)
@@ -87,7 +87,7 @@ class Playlist < ActiveRecord::Base
         self.list_of_tracks(playlist_name, user)
     end
     def self.song_to_wiki(song, artist, playlist_name, user)
-        search = song + "+" + artist
+        search = artist
         song = search.sub("","+")
         Launchy.open("https://en.wikipedia.org/wiki/Special:Search?search=#{song}")
         self.list_of_tracks(playlist_name, user)
@@ -96,8 +96,8 @@ class Playlist < ActiveRecord::Base
     def edit_playlist
         prompt = TTY::Prompt.new 
         prompt.select("Playlist: #{self.name}, Mood: #{self.mood}", per_page: 10) do |menu|
-            menu.choice "Add Song (not working yet)", -> {Song.search_songs_menu(self)}#display songs not on Playlist () -> pick and add
-            menu.choice "Remove Song (not working yet)", -> {self.songs_playlist}#display songs on Playlist -> pick and delete
+            menu.choice "Add Song", -> {Song.search_songs_menu(self)}#display songs not on Playlist () -> pick and add
+            menu.choice "Remove Song", -> {self.songs_playlist}#display songs on Playlist -> pick and delete
             menu.choice "Rename Playlist", -> {self.rename_playlist}
             menu.choice "Change Mood", -> {self.change_mood}
             menu.choice "Delete Playlist", -> {self.delete_playlist}
@@ -139,7 +139,7 @@ class Playlist < ActiveRecord::Base
     
     def delete_playlist
         prompt = TTY::Prompt.new
-        if prompt.yes?("PERMANENTLY DELETE")
+        if prompt.yes?("Are you sure you want to PERMANENTLY DELETE your Playlist?")
         user_instance = self.user
         self.destroy
         Interface.new.main_menu(user_instance)
