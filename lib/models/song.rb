@@ -69,20 +69,19 @@ class Song < ActiveRecord::Base
         self.add_selected_songs(song_select, playlist_instance)
     end 
 
+
+
     def self.search_by_title(playlist_instance) 
         prompt = TTY::Prompt.new
         search_term = prompt.ask("Enter your search term:")
-        if Song.all.map {|song| song.title}.include?(search_term)
-            found_song = Song.all.find_by(title: search_term)
-            song_title = found_song.title
-            song_artist = found_song.artist
-            if prompt.yes?("Found: #{song_title} by #{song_artist}, Add to playlist?")
-                song_array = []
-                song_array << found_song.title
-                self.add_selected_songs(song_array, playlist_instance)
-            else 
-                self.search_songs_menu(playlist_instance)
-            end 
+        if songs_found = Song.where("title LIKE ?","%#{search_term}%")
+        songs_list = songs_found.map {|song| "#{song.title} by #{song.artist}"}
+        choice = prompt.select("Found songs:", songs_list)
+        choice = [choice]
+        
+        self.add_selected_songs(choice, playlist_instance)
+        self.search_songs_menu(playlist_instance)
+            
         else 
             puts "No matching song was found. Returning to Song Search"
             sleep(2)
@@ -93,8 +92,10 @@ class Song < ActiveRecord::Base
     def self.search_by_artist(playlist_instance) 
         prompt = TTY::Prompt.new
         search_term = prompt.ask("Enter your search term:")
-        if Song.all.map {|song| song.artist}.include?(search_term)
-            found_artist_songs = Song.all.select {|song| song.artist == search_term}
+        if artists_found = Song.where("artist LIKE ?","%#{search_term}%")
+            artists_list =  artists_found.map {|song| "#{song.artist}"}.uniq
+            choice = prompt.select("Found Artists:", artists_list)
+            found_artist_songs = Song.all.select {|song| song.artist == choice}
             artist_name = found_artist_songs.first.artist
             song_names = found_artist_songs.map {|song| song.title}
             song_selection = prompt.multi_select("Pick Songs by #{artist_name}", song_names)
@@ -115,6 +116,7 @@ class Song < ActiveRecord::Base
         i = nums.last + 1 
         end
         song_array.each do |songstring| 
+            songstring = songstring.split(" by ").first 
             song = Song.all.find_by(title: songstring)
             Tracklist.create(playlist_id: playlist_instance.id, song_id: song.id, track_num: i)
             i += 1 
