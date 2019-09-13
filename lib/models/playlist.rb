@@ -59,8 +59,12 @@ class Playlist < ActiveRecord::Base
         pid = fork{ exec 'afplay', "lib/audio_files/#{music_file}.mp3" }
         prompt.select("Playing") do |menu|
             menu.choice "Stop", -> {Playlist.kill_helper(playlist_name, user)}
-            menu.choice "Want to see it on YouTube", -> {self.song_to_url(music_file, url_artist, playlist_name, user)}
-            end 
+            menu.choice "Want to see it on YouTube?", -> {self.song_to_yt(music_file, url_artist, playlist_name, user)}
+            menu.choice "See Google results?", -> {self.song_to_google(music_file, url_artist, playlist_name, user)}
+            menu.choice "Find it's Wikipedia page?", -> {self.song_to_wiki(music_file, url_artist, playlist_name, user)}
+            menu.choice "", -> {user.my_playlists}
+            menu.choice "Back", -> {user.my_playlists}
+        end 
         end 
     end
  
@@ -69,13 +73,25 @@ class Playlist < ActiveRecord::Base
         Playlist.list_of_tracks(playlist_name, user)
     end
 
-    def self.song_to_url(song, artist, playlist_name, user)
+    def self.song_to_yt(song, artist, playlist_name, user)
         search = song + "+" + artist
         song = search.sub("","+")
         Launchy.open("https://www.youtube.com/results?search_query=#{song}")
         self.list_of_tracks(playlist_name, user)
     end
 
+    def self.song_to_google(song, artist, playlist_name, user)
+        search = song + "+" + artist
+        song = search.sub("","+")
+        Launchy.open("https://www.google.com/search?q=#{song}")
+        self.list_of_tracks(playlist_name, user)
+    end
+    def self.song_to_wiki(song, artist, playlist_name, user)
+        search = song + "+" + artist
+        song = search.sub("","+")
+        Launchy.open("https://en.wikipedia.org/wiki/Special:Search?search=#{song}")
+        self.list_of_tracks(playlist_name, user)
+    end
 
     def edit_playlist
         prompt = TTY::Prompt.new 
